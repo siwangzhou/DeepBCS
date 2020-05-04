@@ -4,15 +4,13 @@ import os
 from PIL import Image
 import train_cifar10_vgg16
 
+image_size = 224
+image_size1 =352
 
-sample_rate =0.1
-image_size = 512
-image_size1 =512
 mode='test'
-file_name = 'baby'
-traindata_path='D:/DeepBCS-master/DataSets/TestData/Set5'
-testdata_path='D:/DeepBCS-master/DataSets/Prediction/%s_FSR' %sample_rate
-#name=['baby','bird','butterfly','head','woman']
+
+traindata_path='./set5_ori'
+testdata_path='./set5_test/Woman/0.4'
 
 def load_data(dataset_trainpath,dataset_testpath):   
     
@@ -21,22 +19,21 @@ def load_data(dataset_trainpath,dataset_testpath):
     files = os.listdir(dataset_trainpath)  
     test_files = os.listdir(dataset_testpath)
 
+
     for f in files:
-        if f.startswith(file_name) : 
-            print(f)
+        if f.endswith('png') or f.endswith('bmp') or f.endswith('JPEG'):
             fname = dataset_trainpath + '/' + f
             img = Image.open(fname)
-            img = np.array(img.convert('L'))  
+            img = np.array(img.convert('L'))  #将图像list变成二维矩阵，方便计算
             img = np.float32(img)
            
             train_x=img/255.0      
-    
+     
     for f1 in test_files:
-        if f1.startswith(file_name) :
-            print(f1)
+        if f1.endswith('png') or f1.endswith('jpg') or f1.endswith('JPEG'):
             fname1 = dataset_testpath + '/' + f1
             img1 = Image.open(fname1)
-            img1 = np.array(img1.convert('L'))  
+            img1 = np.array(img1.convert('L'))  #将图像list变成二维矩阵，方便计算
             img1 = np.float32(img1)
             test_x.append((img1/255.0))
    
@@ -83,12 +80,12 @@ with tf.Graph().as_default():
     sess.run(init)    
 
     #恢复部分参数 
-    model_path='E:/pd/CSCD/VGG16_model/cifar10_1/' 
+    model_path='./VGG16_model/cifar10_1/' 
     saver_AdvCNN.restore(sess, model_path +'AdvCNN_Saved_Model_298.cpkt')
           
     if mode == 'test': 
         train_x, test_x =load_data(traindata_path,testdata_path)
-        for i in range(1):
+        for i in range(9):
             train_x =tf.reshape(train_x,[-1,image_size,image_size1,1])
             test_x1 =tf.reshape(test_x[i],[-1,image_size,image_size1,1])
 

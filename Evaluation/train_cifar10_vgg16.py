@@ -60,7 +60,7 @@ def Vgg_16(x,  keep_prob=None,train_flag=None,reuse=None):
         output = tf.nn.relu( batch_norm(conv2d(output, W_conv3_3) + b_conv3_3, train_flag))
         output = max_pool(output, 2, 2, "pool3")
 
-        output = tf.reshape(output, [-1,64*64*256])
+        output = tf.reshape(output, [-1, 28*44*256])
     
         return output
 
