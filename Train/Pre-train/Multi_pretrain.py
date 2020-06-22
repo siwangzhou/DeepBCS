@@ -96,11 +96,9 @@ with tf.Graph().as_default():
     grads_vars = optimizer.compute_gradients( train_loss)
     Train_op = optimizer.apply_gradients( grads_vars)
     
-    print('把计算图写入事件文件')
     writer=tf.summary.FileWriter(logdir='Logs', graph=tf.get_default_graph())
     writer.close()
     
-    #启动会话 
     init=tf.global_variables_initializer()    
     saver=tf.train.Saver(max_to_keep=300)
     sess=tf.Session()
@@ -140,7 +138,7 @@ with tf.Graph().as_default():
          
     print("Training Finished")
     
-    #保存测量矩阵
+    #save sampling matrix
     weights = sess.run(Block_weights_output, feed_dict=feed_dict)
     # B=np.squeeze(weights[0])   
     # C=np.transpose(np.reshape(B,[1024,51]))  
