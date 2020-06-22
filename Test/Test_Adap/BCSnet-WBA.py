@@ -17,7 +17,6 @@ mode = 'test'
 rate_list = [0.01, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4]
 k = len(rate_list)
 
-# 读取数据
 Matrix = 'D:/DeepBCS-master/Train/Pre-train/phi_0.1_7'  
 Phi_matrix = sio.loadmat(Matrix)
 A1 = Phi_matrix['A1']
@@ -39,7 +38,7 @@ A6_pinv = Phi_pinv['A6_pinv']
 A7_pinv = Phi_pinv['A7_pinv']
 
 if mode == 'test':
-    rate = 0.3  #the adaptive sampling rate {0.03, 0.05, 0.1, 0.2, 0.3} 0.03
+    rate = 0.3  #the adaptive sampling rate {0.03, 0.05, 0.1, 0.2, 0.3} 
     #for Set5
     '''
     filename='woman'  # for Set5 {baby, bird, butterfly, head, woman}
@@ -47,7 +46,7 @@ if mode == 'test':
     filepaths = glob.glob(testdata_path + '\%s.bmp' %filename)  
     test_onehot_path = 'D:/DeepBCS-master/Test/Onehot/Set5/%s_7_3/onehot_%s_%s'  %(rate, filename, rate)
     '''
-    #for Set11 or BSD100
+    #for Set11 or BSD100 or Video
     testdata_path = 'D:/DeepBCS-master/DataSets/TestData/Set11_256' 
     filepaths = glob.glob(testdata_path + '/*.tif') 
     test_onehot_path = 'D:/DeepBCS-master/Test/Onehot/Set11/%s_7_3/onehot_Set11_256_%s' %(rate, rate)
@@ -68,6 +67,11 @@ if mode == 'test':
         Block_onehot = Block_onehot[np.newaxis, :, :]
     else:
         Block_onehot = np.transpose(Block_onehot, (2, 0, 1))
+        #for Video
+        '''
+        Block_onehot = Block_onehot.repeat(nrtest, axis=2)
+        Block_onehot = np.transpose(Block_onehot, (2, 0, 1))
+        '''
 
 
 def matlab_style_gauss2D(shape=(3, 3), sigma=0.5):
@@ -131,7 +135,7 @@ def WeightsVariable(shape, name='w', trainable=True):
         N = shape[0] * shape[1] * (shape[2] + shape[3]) / 2
     else:
         N = shape[0] / 2
-    initial = tf.random_normal(shape=shape, stddev=np.sqrt(2.0 / N))  # 变量的初始值
+    initial = tf.random_normal(shape=shape, stddev=np.sqrt(2.0 / N)) 
     return tf.get_variable(name, initializer=initial, trainable=trainable)
 
 
@@ -199,7 +203,6 @@ def Initial_Net(Block_image, Block_sampling_rate, Phi_A, Phi_A_pinv):
 
 
 with tf.Graph().as_default():
-    # 构造图
     x_image = tf.placeholder(tf.float32, [batch_size, image_size_row, image_size_col, image_channel])
     Onehot = tf.placeholder(tf.float32, [batch_size, Block_onehot.shape[1], k])
     Phi_A1 = tf.placeholder(tf.float32, [A1.shape[0], A1.shape[1]])
@@ -305,11 +308,9 @@ with tf.Graph().as_default():
     grads_vars = optimizer.compute_gradients(Train_loss, var_list=params + params_w2)
     Train_op = optimizer.apply_gradients(grads_vars)
 
-    print('把计算图写入事件文件')
     writer = tf.summary.FileWriter(logdir='Logs', graph=tf.get_default_graph())
     writer.close()
 
-    # 启动会话
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=300)
     saver_ini = tf.train.Saver(var_list=params_w1)

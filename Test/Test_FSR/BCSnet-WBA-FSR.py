@@ -39,16 +39,17 @@ A7_pinv = Phi_pinv['A7_pinv']
 
 if mode == 'test':
     rate = 0.4  #the fixed sampling rate {0.01, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4}
-    #for Set5
-    
+    #for Set5   
     filename='woman'  # for Set5 {baby, bird, butterfly, head, woman}
     testdata_path = 'D:/DeepBCS-master/DataSets/TestData/Set5' 
     filepaths = glob.glob(testdata_path + '\%s.bmp' %filename)  
+    
+    #for Set11 or BSD100 or Video    
     '''
-    #for Set11 or BSD100    
     testdata_path = 'D:/DeepBCS-master/DataSets/TestData/Set11_256' 
     filepaths = glob.glob(testdata_path + '/*.tif') 
     '''
+    
     image_size_row = 352
     image_size_col = 224
     nrtest = len(filepaths)
@@ -210,7 +211,6 @@ def Initial_Net(Block_image, Block_sampling_rate, Phi_A, Phi_A_pinv):
 
 
 with tf.Graph().as_default():
-    # 构造图
     x_image = tf.placeholder(tf.float32, [batch_size, image_size_row, image_size_col, image_channel])
     Onehot = tf.placeholder(tf.float32, [batch_size, Block_onehot.shape[1], k])
     Phi_A1 = tf.placeholder(tf.float32, [A1.shape[0], A1.shape[1]])
@@ -314,11 +314,9 @@ with tf.Graph().as_default():
     grads_vars = optimizer.compute_gradients(Train_loss, var_list=params + params_w2)
     Train_op = optimizer.apply_gradients(grads_vars)
 
-    print('把计算图写入事件文件')
     writer = tf.summary.FileWriter(logdir='Logs', graph=tf.get_default_graph())
     writer.close()
 
-    # 启动会话
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=300)
     saver_ini = tf.train.Saver(var_list=params_w1)
