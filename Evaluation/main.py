@@ -24,7 +24,7 @@ def load_data(dataset_trainpath,dataset_testpath):
         if f.endswith('png') or f.endswith('bmp') or f.endswith('JPEG'):
             fname = dataset_trainpath + '/' + f
             img = Image.open(fname)
-            img = np.array(img.convert('L'))  #将图像list变成二维矩阵，方便计算
+            img = np.array(img.convert('L'))  
             img = np.float32(img)
            
             train_x=img/255.0      
@@ -33,7 +33,7 @@ def load_data(dataset_trainpath,dataset_testpath):
         if f1.endswith('png') or f1.endswith('jpg') or f1.endswith('JPEG'):
             fname1 = dataset_testpath + '/' + f1
             img1 = Image.open(fname1)
-            img1 = np.array(img1.convert('L'))  #将图像list变成二维矩阵，方便计算
+            img1 = np.array(img1.convert('L')) 
             img1 = np.float32(img1)
             test_x.append((img1/255.0))
    
@@ -79,7 +79,6 @@ with tf.Graph().as_default():
     sess = tf.InteractiveSession(config=config_proto)
     sess.run(init)    
 
-    #恢复部分参数 
     model_path='./VGG16_model/cifar10_1/' 
     saver_AdvCNN.restore(sess, model_path +'AdvCNN_Saved_Model_298.cpkt')
           

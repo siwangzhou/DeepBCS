@@ -19,8 +19,7 @@ def batch_norm(input, train_flag):
                                         is_training=train_flag, updates_collections=None)
 
 
-def Vgg_16(x,  keep_prob=None,train_flag=None,reuse=None):
-    # build_network
+def Vgg_16(x,  keep_prob=None,train_flag=None,reuse=None): 
     with tf.variable_scope('VGG16',reuse=reuse):
   
         W_conv1_1 = tf.get_variable('w_conv1_1', shape=[3, 3, 1, 64], initializer=tf.contrib.keras.initializers.he_normal())
